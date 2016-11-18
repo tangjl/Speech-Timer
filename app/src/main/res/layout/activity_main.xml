@@ -53,20 +53,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SUBMIT"
-        android:layout_alignBaseline="@+id/minutes"
-        android:layout_alignBottom="@+id/minutes"
+        android:layout_alignBaseline="@+id/seconds"
+        android:layout_alignBottom="@+id/seconds"
         android:layout_alignLeft="@+id/reset"
         android:layout_alignStart="@+id/reset" />
-
-    <EditText
-        android:id="@+id/seconds"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/gray"
-        android:ems="2"
-        android:layout_alignBaseline="@+id/submitTime"
-        android:layout_alignBottom="@+id/submitTime"
-        android:layout_centerHorizontal="true" />
 
     <EditText
         android:id="@+id/minutes"
@@ -74,29 +64,43 @@
         android:layout_height="wrap_content"
         android:background="@color/gray"
         android:ems="2"
-        android:layout_marginTop="82dp"
-        android:layout_marginRight="17dp"
-        android:layout_marginEnd="17dp"
+        android:inputType="number"
+        android:maxLength="2"
+        android:layout_marginTop="55dp"
         android:layout_below="@+id/start"
         android:layout_alignRight="@+id/start"
         android:layout_alignEnd="@+id/start" />
 
-    <TextView
-        android:text="Minutes:"
+    <EditText
+        android:id="@+id/seconds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/minutes"
-        android:layout_toLeftOf="@+id/minutes"
-        android:layout_toStartOf="@+id/minutes"
-        android:id="@+id/textView" />
+        android:background="@color/gray"
+        android:ems="2"
+        android:inputType="number"
+        android:maxLength="2"
+        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignRight="@+id/pause"
+        android:layout_alignEnd="@+id/pause" />
 
     <TextView
         android:text="Seconds:"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView"
+        android:id="@+id/textView2"
+        android:layout_alignBaseline="@+id/minutes"
+        android:layout_alignBottom="@+id/minutes"
         android:layout_toLeftOf="@+id/seconds"
-        android:layout_toStartOf="@+id/seconds"
-        android:id="@+id/textView2" />
+        android:layout_toStartOf="@+id/seconds" />
+
+    <TextView
+        android:text="Minutes:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:layout_alignBaseline="@+id/minutes"
+        android:layout_alignBottom="@+id/minutes"
+        android:layout_toLeftOf="@+id/minutes"
+        android:layout_toStartOf="@+id/minutes" />
 
 </RelativeLayout>

@@ -17,7 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private Button reset;
     private Button submit;
     private TextView timeValue;
-    private EditText input;
+    private EditText inputMinutes;
+    private EditText inputSeconds;
     private long startTime = 0L;
 
     private Handler handler = new Handler();
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startTime = SystemClock.uptimeMillis();
                 handler.postDelayed(updateTimer, 0);
-        }
+            }
         });
 
         pause = (Button) findViewById(R.id.pause);
@@ -61,16 +62,19 @@ public class MainActivity extends AppCompatActivity {
 
         submit = (Button) findViewById(R.id.submitTime);
         submit.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                input = (EditText) findViewById(R.id.editText);
-                timeValue.setText(input.getText().toString());
+            public void onClick(View view) { //fix this shit
+                inputMinutes = (EditText) findViewById(R.id.minutes);
+                inputSeconds = (EditText) findViewById(R.id.seconds);
+                String newTime = (String.format("%02d", Integer.parseInt(inputMinutes.getText().toString())) + ":"
+                        + String.format("%02d", Integer.parseInt(inputSeconds.getText().toString())) + ":000");
+                timeValue.setText(newTime);
             }
         });
     }
 
     private Runnable updateTimer = new Runnable() {
 
-            public void run () {
+        public void run () {
             time = SystemClock.uptimeMillis() - startTime;
             updatedTime = timeSwapBuff + time;
 
