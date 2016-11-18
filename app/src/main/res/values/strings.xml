@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">SpeechTimer</string>
+    <string name="app_name">Speech Timer</string>
+    <string name="timeValue">00:00:000</string>
 </resources>
