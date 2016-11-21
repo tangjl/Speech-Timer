@@ -15,10 +15,7 @@ import android.text.TextUtils;
 
 //keep screen on
 //history of times
-//input validation: no times more than 59 minutes or 59 seconds
 //layout stuff
-//fix: when you have a time inputted, then change the time in the fields and hit reset, it will set it to whats in the edittext fields.
-//should be whatever was the last input
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private Timer timer;
     private long millis = 0;
     boolean isRunning = false;
+    private int savedMinutes;
+    private int savedSeconds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,47 +95,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 timer.cancel();
 
-                int minutes = 0;
-                int seconds = 0;
-
-                if(TextUtils.isEmpty(inputMinutes.getText()) && TextUtils.isEmpty(inputSeconds.getText())) {
-                    minutes = 0;
-                    seconds = 0;
-                }
-                else if(TextUtils.isEmpty(inputMinutes.getText()) && !TextUtils.isEmpty(inputSeconds.getText())) {
-                    minutes = 0;
-                    seconds = Integer.parseInt(inputSeconds.getText().toString());
-                }
-                else if(TextUtils.isEmpty(inputSeconds.getText()) && !TextUtils.isEmpty(inputMinutes.getText())) {
-                    seconds = 0;
-                    minutes = Integer.parseInt(inputMinutes.getText().toString());
-                }
-                else if(59 < Integer.parseInt(inputSeconds.getText().toString()) && 60 < Integer.parseInt(inputMinutes.getText().toString())) {
-                    inputMinutes.setError("Must be <= 60");
-                    inputSeconds.setError("Must be < 60");
-                    toggle.setEnabled(false);
-                    clear.setEnabled(false);
-                    reset.setEnabled(false);
-                    return;
-                }
-                else if(59 < Integer.parseInt(inputSeconds.getText().toString())) {
-                    inputSeconds.setError("Must be < 60");
-                    toggle.setEnabled(false);
-                    clear.setEnabled(false);
-                    reset.setEnabled(false);
-                    return;
-                }
-                else if(60 < Integer.parseInt(inputMinutes.getText().toString())) {
-                    inputMinutes.setError("Must be <= 60");
-                    toggle.setEnabled(false);
-                    clear.setEnabled(false);
-                    reset.setEnabled(false);
-                    return;
-                }
-                else {
-                    minutes = Integer.parseInt(inputMinutes.getText().toString());
-                    seconds = Integer.parseInt(inputSeconds.getText().toString());
-                }
+                int minutes = savedMinutes;
+                int seconds = savedSeconds;
 
                 millis = (minutes*60*1000) + (seconds*1000);
                 timer = new Timer (millis, 1);
@@ -176,10 +136,12 @@ public class MainActivity extends AppCompatActivity {
                 else if(TextUtils.isEmpty(inputMinutes.getText()) && !TextUtils.isEmpty(inputSeconds.getText())) {
                     minutes = 0;
                     seconds = Integer.parseInt(inputSeconds.getText().toString());
+                    savedSeconds = Integer.parseInt(inputSeconds.getText().toString());
                 }
                 else if(TextUtils.isEmpty(inputSeconds.getText()) && !TextUtils.isEmpty(inputMinutes.getText())) {
                     seconds = 0;
                     minutes = Integer.parseInt(inputMinutes.getText().toString());
+                    savedMinutes = Integer.parseInt(inputMinutes.getText().toString());
                 }
                 else if(59 < Integer.parseInt(inputSeconds.getText().toString()) && 60 < Integer.parseInt(inputMinutes.getText().toString())) {
                     inputMinutes.setError("Must be <= 60");
@@ -206,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     minutes = Integer.parseInt(inputMinutes.getText().toString());
                     seconds = Integer.parseInt(inputSeconds.getText().toString());
+                    savedMinutes = Integer.parseInt(inputMinutes.getText().toString());
+                    savedSeconds = Integer.parseInt(inputSeconds.getText().toString());
                 }
 
                 millis = (minutes*60*1000) + (seconds*1000);
