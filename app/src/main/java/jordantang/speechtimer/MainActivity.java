@@ -11,11 +11,14 @@ import android.os.CountDownTimer;
 import android.view.inputmethod.InputMethodManager;
 import android.content.Context;
 import android.widget.ToggleButton;
+import android.text.TextUtils;
 
 //keep screen on
 //history of times
-//input validation
+//input validation: no times more than 59 minutes or 59 seconds
 //layout stuff
+//fix: when you have a time inputted, then change the time in the fields and hit reset, it will set it to whats in the edittext fields.
+//should be whatever was the last input
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
                         inputMinutes.setEnabled(true);
                         inputSeconds.setEnabled(true);
                     } else {
-                        timer.start();
                         inputSeconds.setEnabled(false);
                         inputMinutes.setEnabled(false);
                         submit.setEnabled(false);
+                        timer.start();
                     }
                     isRunning = !isRunning;
                 }
@@ -82,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 viewTime.setText("00:00:000");
                 toggle.setChecked(false);
                 isRunning = false;
-                toggle.setEnabled(true);
+                toggle.setEnabled(false);
                 submit.setEnabled(true);
                 inputMinutes.setEnabled(true);
                 inputSeconds.setEnabled(true);
@@ -93,8 +96,48 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 timer.cancel();
 
-                int minutes = Integer.parseInt(inputMinutes.getText().toString());
-                int seconds = Integer.parseInt(inputSeconds.getText().toString());
+                int minutes = 0;
+                int seconds = 0;
+
+                if(TextUtils.isEmpty(inputMinutes.getText()) && TextUtils.isEmpty(inputSeconds.getText())) {
+                    minutes = 0;
+                    seconds = 0;
+                }
+                else if(TextUtils.isEmpty(inputMinutes.getText()) && !TextUtils.isEmpty(inputSeconds.getText())) {
+                    minutes = 0;
+                    seconds = Integer.parseInt(inputSeconds.getText().toString());
+                }
+                else if(TextUtils.isEmpty(inputSeconds.getText()) && !TextUtils.isEmpty(inputMinutes.getText())) {
+                    seconds = 0;
+                    minutes = Integer.parseInt(inputMinutes.getText().toString());
+                }
+                else if(59 < Integer.parseInt(inputSeconds.getText().toString()) && 60 < Integer.parseInt(inputMinutes.getText().toString())) {
+                    inputMinutes.setError("Must be <= 60");
+                    inputSeconds.setError("Must be < 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else if(59 < Integer.parseInt(inputSeconds.getText().toString())) {
+                    inputSeconds.setError("Must be < 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else if(60 < Integer.parseInt(inputMinutes.getText().toString())) {
+                    inputMinutes.setError("Must be <= 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else {
+                    minutes = Integer.parseInt(inputMinutes.getText().toString());
+                    seconds = Integer.parseInt(inputSeconds.getText().toString());
+                }
+
                 millis = (minutes*60*1000) + (seconds*1000);
                 timer = new Timer (millis, 1);
 
@@ -115,6 +158,8 @@ public class MainActivity extends AppCompatActivity {
 
         submit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                int minutes = 0;
+                int seconds = 0;
                 timer.cancel();
                 inputMinutes = (EditText) findViewById(R.id.minutes);
                 inputSeconds = (EditText) findViewById(R.id.seconds);
@@ -124,8 +169,45 @@ public class MainActivity extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(inputMinutes.getWindowToken(), 0);
                 imm.hideSoftInputFromWindow(inputSeconds.getWindowToken(), 0);
 
-                int minutes = Integer.parseInt(inputMinutes.getText().toString());
-                int seconds = Integer.parseInt(inputSeconds.getText().toString());
+                if(TextUtils.isEmpty(inputMinutes.getText()) && TextUtils.isEmpty(inputSeconds.getText())) {
+                    minutes = 0;
+                    seconds = 0;
+                }
+                else if(TextUtils.isEmpty(inputMinutes.getText()) && !TextUtils.isEmpty(inputSeconds.getText())) {
+                    minutes = 0;
+                    seconds = Integer.parseInt(inputSeconds.getText().toString());
+                }
+                else if(TextUtils.isEmpty(inputSeconds.getText()) && !TextUtils.isEmpty(inputMinutes.getText())) {
+                    seconds = 0;
+                    minutes = Integer.parseInt(inputMinutes.getText().toString());
+                }
+                else if(59 < Integer.parseInt(inputSeconds.getText().toString()) && 60 < Integer.parseInt(inputMinutes.getText().toString())) {
+                    inputMinutes.setError("Must be <= 60");
+                    inputSeconds.setError("Must be < 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else if(59 < Integer.parseInt(inputSeconds.getText().toString())) {
+                    inputSeconds.setError("Must be < 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else if(60 < Integer.parseInt(inputMinutes.getText().toString())) {
+                    inputMinutes.setError("Must be <= 60");
+                    toggle.setEnabled(false);
+                    clear.setEnabled(false);
+                    reset.setEnabled(false);
+                    return;
+                }
+                else {
+                    minutes = Integer.parseInt(inputMinutes.getText().toString());
+                    seconds = Integer.parseInt(inputSeconds.getText().toString());
+                }
+
                 millis = (minutes*60*1000) + (seconds*1000);
                 timer = new Timer (millis, 1);
 
@@ -135,10 +217,11 @@ public class MainActivity extends AppCompatActivity {
                 int millis2 = (int) (millis%1000);
                 viewTime.setText(String.format("%02d", minutes2) + ":" + String.format("%02d", seconds2)
                         + ":" + String.format("%03d", millis2));
+                isRunning = false;
+                toggle.setChecked(false);
                 toggle.setEnabled(true);
                 clear.setEnabled(true);
                 reset.setEnabled(true);
-
             }
         });
     }
@@ -150,21 +233,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onTick(long l) {
-            int seconds = (int) (l/1000);
+        public void onTick(long millis) {
+            int seconds = (int) (millis/1000);
             int minutes = seconds/60;
             seconds = seconds%60;
-            int milliseconds = (int) (l%1000);
+            int milliseconds = (int) (millis%1000);
             viewTime.setText(String.format("%02d", minutes) + ":" + String.format("%02d", seconds)
                     + ":" + String.format("%03d", milliseconds));
         }
 
         @Override
         public void onFinish() {
-            viewTime.setText("DONE!");
+            toggle.setChecked(false);
+            submit.setEnabled(true);
+            inputMinutes.setEnabled(true);
+            inputSeconds.setEnabled(true);
             toggle.setEnabled(false);
+            viewTime.setText("DONE!");
         }
     }
-
-
 }
